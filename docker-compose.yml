@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.41
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
+      - "14269:14269"
+      - "9411:9411"
+
+  otel-collector:
+    image: otel/opentelemetry-collector:0.63.0
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "4317:4317"
+      - "55680:55680"
+
+  my-spring-boot-app:
+    image: my-spring-boot-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_TOOL_OPTIONS=-javaagent:/opt/hypertrace-agent/hypertrace-agent.jar
+      - HT_SERVICE_NAME=auto-demo-mdc-logger
+      - HT_REPORTING_ENDPOINT=http://otel-collector:4317
+    depends_on:
+      - otel-collector
+      - jaeger
