@@ -9,3 +9,7 @@
 
 
 ![img_4.png](img_4.png)
+metric to trace: histogram_quantile(.99,sum(rate(http_server_requests_seconds_bucket{application="my-spring-boot-app", uri!="/actuator/prometheus"}[1m])) by(uri, le))
+trace to log : traceId
+log to trace : {compose_service="my-spring-boot-app"} |= `51269bb75eb932d5b3dc8f958f03064b`
+
