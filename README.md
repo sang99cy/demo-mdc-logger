@@ -1,3 +1,4 @@
+HT_REPORTING_ENDPOINT=http://localhost:4317;HT_SERVICE_NAME=auto-demo-mdc-logger;JAVA_TOOL_OPTIONS=-javaagent:hypertrace-agent-1.3.13-all.jar;MANAGEMENT_METRICS_TAGS_APPLICATION=my-spring-boot-app;OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318;OTEL_METRICS_EXPORTER=none;OTEL_RESOURCE_ATTRIBUTES=compose_service=my-spring-boot-app;OTEL_SERVICE_NAME=auto-demo-mdc-logger
 1. mvn clean package
 2. docker build -t my-spring-boot-app .
 3. docker-compose up -d 
