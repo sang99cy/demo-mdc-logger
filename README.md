@@ -1,4 +1,4 @@
-1. mvn package
+1. mvn clean package
 2. docker build -t my-spring-boot-app .
 3. docker-compose up -d 
 
