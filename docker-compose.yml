@@ -67,14 +67,14 @@ services:
       - "14269:14269"
       - "9411:9411"
 
-#  otel-collector:
-#    image: otel/opentelemetry-collector:0.63.0
-#    command: ["--config=/etc/otel-collector-config.yml"]
-#    volumes:
-#      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
-#    ports:
-#      - "4317:4317"
-#      - "55680:55680"
+  otel-collector:
+    image: otel/opentelemetry-collector:0.63.0
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "4318:4317"
+      - "55680:55680"
 
   my-spring-boot-app:
     image: my-spring-boot-app
@@ -98,3 +98,17 @@ services:
 #      - otel-collector
 #      - jaeger
     logging: *default-logging
+
+  pyroscope:
+    hostname: pyroscope
+    container_name: pyroscope
+    image: "pyroscope/pyroscope:latest"
+    deploy:
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "4040:4040"
+    command:
+      - "server"
+    volumes:
+      - ./etc/grafana/pyroscope-local-config.yaml:/etc/pyroscope/server.yaml
