@@ -36,7 +36,7 @@ services:
     command: [ "--target=all", "--storage.trace.backend=local", "--storage.trace.local.path=/var/tempo", "--auth.enabled=false" ]
     ports:
       - "14251:14250"
-      - "4318:4317"
+      - "4317:4317"
     depends_on:
       - loki
     logging: *default-logging
@@ -67,14 +67,14 @@ services:
       - "14269:14269"
       - "9411:9411"
 
-  otel-collector:
-    image: otel/opentelemetry-collector:0.63.0
-    command: ["--config=/etc/otel-collector-config.yml"]
-    volumes:
-      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
-    ports:
-      - "4317:4317"
-      - "55680:55680"
+#  otel-collector:
+#    image: otel/opentelemetry-collector:0.63.0
+#    command: ["--config=/etc/otel-collector-config.yml"]
+#    volumes:
+#      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+#    ports:
+#      - "4317:4317"
+#      - "55680:55680"
 
   my-spring-boot-app:
     image: my-spring-boot-app
@@ -86,13 +86,15 @@ services:
     environment:
       - JAVA_TOOL_OPTIONS=-javaagent:/opt/hypertrace-agent/hypertrace-agent.jar
       - HT_SERVICE_NAME=auto-demo-mdc-logger
-      - HT_REPORTING_ENDPOINT=http://otel-collector:4317
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
+#      - HT_REPORTING_ENDPOINT=http://otel-collector:4317
+      - HT_REPORTING_ENDPOINT=http://tempo:4317
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
+#      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
       - OTEL_SERVICE_NAME=auto-demo-mdc-logger
       - OTEL_RESOURCE_ATTRIBUTES=compose_service=my-spring-boot-app # add custom resource attribute to Span for Grafana Trace to Logs feature
       - OTEL_METRICS_EXPORTER=none # disable metrics exporter
       - MANAGEMENT_METRICS_TAGS_APPLICATION=my-spring-boot-app
-    depends_on:
-      - otel-collector
+#    depends_on:
+#      - otel-collector
 #      - jaeger
     logging: *default-logging
