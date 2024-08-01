@@ -107,6 +107,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "7800:7800"
+    environment:
+      - ACE_ENABLE_METRICS=true
     logging: *default-logging
 
   pyroscope:
