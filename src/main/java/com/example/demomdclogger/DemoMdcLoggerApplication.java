@@ -26,7 +26,7 @@ public class DemoMdcLoggerApplication {
         @GetMapping("/")
         public String hello() {
             logger.debug("Handling request to '/'");
-            String s =  apiService.callApi("http://localhost:7800/demolog4j/v1/demo");
+            String s =  apiService.callApi("http://ace-test-log:7800/demolog4j/v1/demo");
             return s;
         }
     }

@@ -1,0 +1,27 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "DemoLog4j",
+    "version": "1.0.0",
+    "description": "DemoLog4j"
+  },
+  "servers": [
+    {
+      "url": "/demolog4j/v1"
+    }
+  ],
+  "components": {
+    "schemas": {}
+  },
+  "paths": {
+    "/demo": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "success"
+          }
+        }
+      }
+    }
+  }
+}

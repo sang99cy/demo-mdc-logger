@@ -1,0 +1,78 @@
+CREATE COMPUTE MODULE getDemo_BuildMessageResponse
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+--		CALL writeLog('=============HUANBQ DEMO LOG4J==============');
+		CALL WriteLogEvent('log events');
+		SET OutputRoot.JSON.Data.Status = 'OK';
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+	
+--	CREATE FUNCTION writeLog(IN jwtString CHARACTER)
+--	LANGUAGE JAVA
+--	EXTERNAL NAME "huanbq.demo.Log4jMethods.writeLog";
+	
+	CREATE PROCEDURE Split (IN S CHARACTER, IN Env REFERENCE, IN Delim CHARACTER) 
+	BEGIN 
+	   DECLARE P INTEGER; 
+	   DECLARE Idx INTEGER 1; 
+	
+	   SET Env.Split = NULL; 
+	
+	   REPEAT 
+	      SET P = POSITION(Delim IN S); 
+	      IF P = 0 THEN 
+	         SET Env.Split.Array[Idx] = S; 
+	      ELSE 
+	         SET Env.Split.Array[Idx] = LEFT(S, P - 1); 
+	         SET S = SUBSTRING(S FROM P + LENGTH(Delim)); 
+	         SET Idx = Idx + 1; 
+	      END IF; 
+	  UNTIL P = 0    
+	  END REPEAT;    
+	END;
+	
+	CREATE PROCEDURE WriteLogEvent(IN logMessage CHARACTER)
+	BEGIN
+		DECLARE outputArray ROW; 
+		IF InputRoot.HTTPInputHeader.Traceparent <> '' AND InputRoot.HTTPInputHeader.Traceparent IS NOT NULL THEN
+			CALL Split(InputRoot.HTTPInputHeader.Traceparent,outputArray,'-');		
+			SET Environment.traceId = outputArray.Split.Array[2];
+			SET Environment.spanId = outputArray.Split.Array[3];
+			SET Environment.traceFlags = outputArray.Split.Array[4];
+		ELSE 
+			SET Environment.traceId = '';
+			SET Environment.spanId = '';
+			SET Environment.traceFlags = '';		
+		END IF;
+		-- Lấy thời gian hiện tại
+		DECLARE currentTime CHARACTER;
+		SET currentTime = CURRENT_TIMESTAMP;
+		-- Tạo mẫu log theo định dạng mong muốn
+		DECLARE logPattern CHARACTER;
+		SET logPattern = 
+		    CAST(CAST(currentTime AS CHARACTER FORMAT 'HH:mm:ss.SSS') AS CHARACTER)
+		    || ' trace_id=' || Environment.traceId
+		    || ' span_id=' || Environment.spanId
+		    || ' trace_flags=' || Environment.traceFlags 
+		    || ' ' || logMessage;
+		-- Ghi log     
+		LOG EVENT VALUES(logPattern);
+	END;
+	
+END MODULE;

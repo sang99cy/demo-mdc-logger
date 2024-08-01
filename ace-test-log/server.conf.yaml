@@ -568,7 +568,7 @@ ResourceManagers:
   OpenTelemetryManager:
     openTelemetryServiceName: 'auto-card-is'
     openTelemetryEnabled: true
-    exporterOtlpGrpcEndpoint: 'localhost:4318'
+    exporterOtlpGrpcEndpoint: 'tempo:4317'
     #openTelemetryEnabled: false          # Enable or disable OpenTelemetry tracing. OpenTelemetry is only available on the Linux/x86-64 platform
     #openTelemetryServiceName: ''         # Override the Service Name attribute for telemetry spans. Defaults to integration server name.
     #openTelemetryHostName: ''            # Override the value of the Hostname attribute for telemetry spans.

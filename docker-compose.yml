@@ -99,6 +99,16 @@ services:
 #      - jaeger
     logging: *default-logging
 
+
+  ace-test-log:
+    image: ace-test-log
+    build:
+      context: ./ace-test-log
+      dockerfile: Dockerfile
+    ports:
+      - "7800:7800"
+    logging: *default-logging
+
   pyroscope:
     hostname: pyroscope
     container_name: pyroscope
